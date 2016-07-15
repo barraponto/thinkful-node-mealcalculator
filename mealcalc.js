@@ -25,6 +25,7 @@ Diner.prototype.cost = function(){
 var Table = function(diners, tax, tip){
   this.diners = diners||[];
   this.tax = tax;
+  this.tip = tip;
 };
 
 // diner should be a Diner object.
@@ -39,9 +40,25 @@ Table.prototype.cost = function(){
 };
 
 // diner should be a Diner object.
-Table.prototype.bill = function(diner){
+Table.prototype.breakdown = function(diner){
   // tip is equally shared
-  var tip = this.cost() * this.tip / this.diners.length();
+  var tip = this.cost() * this.tip / this.diners.length;
   return tip + diner.cost() * (1 + this.tax);
 };
 
+Table.prototype.bill = function(){
+   return this.cost() * (1 + this.tip + this.tax);
+};
+
+if (require.main == module) {
+  var lasagna = new Dish('lasagna', 200);
+  var host = new Diner();
+  var table = new Table([host, new Diner([lasagna])], 0.20, 0.10);
+  host.addDish(new Dish('Carbonara', 100));
+
+  console.log('Bill total: $' + table.bill());
+  console.log('Breakdown per diner:');
+  table.diners.forEach(function(diner, index){
+     console.log('\tDiner #' + (index+1) + ': $' + table.breakdown(diner));
+  });
+}
